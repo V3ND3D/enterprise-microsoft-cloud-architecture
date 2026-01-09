@@ -30,46 +30,82 @@ Documentation, configuration versioning, and standard naming support long-term m
 
 ## 2. High-Level Architecture Map
 
-```mermaid
-flowchart TD
+This section provides both an **executive summary** and a **technical mapping** of how Identity, Endpoint Management, Security, and Governance components interoperate across the Microsoft cloud ecosystem.
 
-    subgraph Identity["Entra ID (Identity Plane)"]
-        A1[User & Group Management]
-        A2[Conditional Access]
-        A3[RBAC Roles]
-    end
+---
 
-    subgraph Endpoint["Intune (Endpoint Management Plane)"]
-        B1[Compliance Policies]
-        B2[Configuration Profiles]
-        B3[App Protection Policies]
-        B4[Autopilot Provisioning]
-    end
+## 2.1 Executive Summary (High-Level)
 
-    subgraph Security["Microsoft Defender (Security Plane)"]
-        C1[Defender for Endpoint]
-        C2[Defender for Office 365]
-        C3[Defender for Cloud Apps]
-    end
+The architecture is built on four coordinated planes that define trust, enforcement, and operational control:
 
-    subgraph Cloud["Azure (Resource & Governance Plane)"]
-        D1[Resource Groups]
-        D2[Policies & Blueprints]
-        D3[Log Analytics Workspace]
-        D4[Identity Protection]
-    end
+### **Identity Plane — Entra ID**
+Identity is the authoritative control point for authentication, authorization, MFA, Conditional Access, and administrative boundaries.
 
-    A1 --> B1
-    A2 --> B1
-    B1 --> C1
-    C1 --> D3
-    D1 --> D3
-        D3[Log Analytics Workspace]
-        D4[Defender for Cloud]
-        D5[Monitoring & Audit Controls]
-    end
+### **Endpoint Management Plane — Intune**
+Device posture (encryption, OS integrity, threat protection) and lifecycle automation (Autopilot, provisioning, retirement) ensure that only compliant endpoints gain access to corporate resources.
 
-    Identity --> Endpoint
-    Endpoint --> Security
-    Security --> Cloud
-    Cloud --> Identity
+### **Security Plane — Microsoft Defender XDR**
+Threat prevention, detection, and investigation are unified across Endpoint, Office 365, and Cloud Apps, with consistent telemetry flowing into shared analytics and response layers.
+
+### **Governance Plane — Azure**
+Azure Resource structure, Policy enforcement, and Log Analytics provide compliance alignment, monitoring, auditing, and operational continuity.
+
+The interaction of these four planes forms a **zero-trust, compliance-aligned, enterprise-ready** cloud environment.
+
+---
+
+## 2.2 Technical Architecture Mapping (Engineer-Grade)
+
+### **Identity Plane — Entra ID**
+- Directory of users, devices, groups, and admin roles  
+- MFA + Conditional Access enforcement  
+- RBAC boundaries defining least-privilege operations  
+- Identity lifecycle: provisioning, deprovisioning, access reviews  
+
+### **Endpoint Management Plane — Intune**
+- BitLocker, Secure Boot, TPM validation  
+- Baselines: Windows security, configuration profiles, update rings  
+- Application deployment + endpoint compliance reporting  
+- Autopilot → corporate enrollment and device provisioning  
+
+### **Security Plane — Microsoft Defender XDR**
+- Defender for Endpoint: telemetry, threat analytics, automated investigation  
+- Defender for Office 365: anti-phish, Safe Links, Safe Attachments  
+- Defender for Cloud Apps: OAuth app governance, session control  
+- Unified reports surfaced via the Microsoft 365 security dashboard  
+
+### **Governance Plane — Azure Resource & Policy Layer**
+- Resource Groups + naming conventions  
+- Azure Policy: enforce configuration baselines, prevent drift  
+- Log Analytics Workspace: central telemetry lake for identity, endpoint, and security data  
+- Audit logs, alerts, continuous compliance evaluation  
+
+---
+
+## 2.3 Plane Interactions (How the System Actually Behaves)
+
+### **Identity → Endpoint**
+- Entra validates device identity and status  
+- Compliance signals passed from Intune determine access decisions  
+
+### **Endpoint → Security**
+- Device telemetry from Defender informs threat analytics  
+- Noncompliant devices trigger automated isolation paths  
+
+### **Security → Governance**
+- Defender alerts stream into Log Analytics  
+- Policy-driven corrective actions enforce baseline alignment  
+
+### **Governance → Identity & Endpoint**
+- Azure Policy ensures standardized configurations  
+- Logging + auditing support lifecycle, incident, and compliance workflows  
+
+---
+
+## 2.4 Architectural Outcomes
+
+- A unified, enforceable trust model centered on identity and device posture  
+- Reduced attack surface through integrated security baselines  
+- Operational consistency via policy-driven governance  
+- End-to-end visibility across identity, device, and cloud layers  
+- **Microsoft Secure Score improved from 46.15% → 93.88%** during implementation  
